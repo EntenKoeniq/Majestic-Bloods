@@ -1,4 +1,5 @@
 {
+	"mongodb": "MONGODB URI",
 	"token": "BOT TOKEN",
 	"clientId": "BOT ID",
 	"guildId": "DISCORD SERVER ID",

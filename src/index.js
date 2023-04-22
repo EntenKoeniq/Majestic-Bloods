@@ -8,6 +8,7 @@ const {
 	GatewayIntentBits
 } = require('discord.js');
 const {
+	mongodb,
 	token
 } = require('./config.json');
 
@@ -34,7 +35,7 @@ for (const folder of commandFolders) {
 client.once(Events.ClientReady, async c => {
 	require('./registerCommands.js');
 
-	await mongoose.connect('mongodb+srv://EntenKoeniq:test@cluster0.fvngv.mongodb.net/?retryWrites=true&w=majority');
+	await mongoose.connect(mongodb);
 
 	console.log(`Ready! Logged in as ${c.user.tag}`);
 
