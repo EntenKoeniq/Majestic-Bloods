@@ -42,12 +42,21 @@ module.exports = {
     const reason = new TextInputBuilder()
       .setCustomId('reason')
       .setRequired(true)
-      .setLabel("Kurze Beschreibung für dein Anliegen")
+      .setLabel("Beschreibe dein Anliegen")
       .setPlaceholder("...")
-      .setStyle(TextInputStyle.Short);
+      .setStyle(TextInputStyle.Paragraph);
     const reasonActionRow = new ActionRowBuilder().addComponents(reason);
+
+    const option = new TextInputBuilder()
+      .setCustomId('option')
+      .setRequired(true)
+      .setValue(interaction.values[0])
+      .setLabel("Kurze Anmerkung worum es geht")
+      .setPlaceholder("Kurze Anmerkung worum es geht")
+      .setStyle(TextInputStyle.Short);
+    const optionActionRow = new ActionRowBuilder().addComponents(option);
     
-    modal.addComponents(usernameActionRow, idActionRow, reasonActionRow);
+    modal.addComponents(usernameActionRow, idActionRow, reasonActionRow, optionActionRow);
     interaction.showModal(modal);
   },
   close: async interaction => {
@@ -61,6 +70,7 @@ module.exports = {
     const emailInput = interaction.fields.getTextInputValue('username');
     const idInput = interaction.fields.getTextInputValue('id');
     const reasonInput = interaction.fields.getTextInputValue('reason');
+    const optionInput = interaction.fields.getTextInputValue('option');
 
     const posChannel = interaction.guild.channels.cache.find(c => c.name === `ticket-${interaction.user.id}`);
     if (posChannel)
@@ -68,11 +78,16 @@ module.exports = {
     
     const embed = new EmbedBuilder()
       .setColor("Red")
-      .setTitle(`${interaction.user.username}'s Ticket`)
+      .setAuthor({
+        name: `${interaction.user.username}#${interaction.user.discriminator}`,
+        iconURL: interaction.user.avatar ? `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.webp` : 'https://cdn.discordapp.com/embed/avatars/0.png'
+      })
+      .setTitle(`Hallo!`)
       .setDescription("Willkommen bei deinem Ticket! Bitte habe ein wenig Geduld, es wird dir schnellstmöglich jemand weiterhelfen.")
       .addFields({ name: `Name`, value: emailInput })
       .addFields({ name: `ID`, value: idInput })
       .addFields({ name: `Anliegen`, value: reasonInput })
+      .addFields({ name: `Anmerkung`, value: optionInput })
       .setFooter({ text: `${interaction.guild.name} tickets` });
     
     const button = new ActionRowBuilder()

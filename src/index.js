@@ -32,12 +32,12 @@ for (const folder of commandFolders) {
 	}
 }
 
-client.once(Events.ClientReady, async c => {
+client.once(Events.ClientReady, async interaction => {
+	await mongoose.connect(mongodb).catch(_ => { throw new Error("Es konnte keine Verbidung zur Datenbank hergestellt werden!"); });
+	
 	require('./registerCommands.js');
 
-	await mongoose.connect(mongodb);
-
-	console.log(`Ready! Logged in as ${c.user.tag}`);
+	console.log(`Ready! Logged in as ${interaction.user.tag}`);
 
 	const activities = [
 		"Gibt einer Person gerade einen Bloodout!",
@@ -50,7 +50,7 @@ client.once(Events.ClientReady, async c => {
   setInterval(() => {
     const status = activities[Math.floor(Math.random() * activities.length)];
     client.user.setPresence({
-      activities: [{ name: `${status}` }]
+      activities: [{ name: status }]
     });
   }, 5000);
 });

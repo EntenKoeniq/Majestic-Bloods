@@ -17,15 +17,19 @@ module.exports = {
     .addChannelOption(o => o.setName('channel').setDescription("Der Kanal in der die Nachricht rein gesendet werden soll.").addChannelTypes(ChannelType.GuildText).setRequired(true))
     .addChannelOption(o => o.setName('category').setDescription("Die Kategorie in der die Tickets eröffnet werden soll.").addChannelTypes(ChannelType.GuildCategory).setRequired(true)),
   async execute(interaction) {
-    if (!interaction.member.roles.cache.has(leaderRoleID))
-      return await interaction.reply({ content: "Du besitzt nicht die benötigten Berechtigungen dafür!", ephemeral: true });
+    if (!interaction.member.roles.cache.has(leaderRoleID)) {
+      await interaction.reply({ content: "Du besitzt nicht die benötigten Berechtigungen dafür!", ephemeral: true });
+      return;
+    }
     
     const channel = interaction.options.getChannel('channel');
     const category = interaction.options.getChannel('category');
 
     const ticket = await ticketSchema.findOne({ Guild: interaction.guild.id });
-    if (ticket)
-      return await interaction.reply({ content: "Dieses System wurde bereits eingerichtet. Nutze `/ticket-disable` um das letzte System zu deaktivieren.", ephemeral: true });
+    if (ticket) {
+      await interaction.reply({ content: "Dieses System wurde bereits eingerichtet. Nutze `/ticket-disable` um das letzte System zu deaktivieren.", ephemeral: true });
+      return;
+    }
 
     ticketSchema.create({
       Guild: interaction.guild.id,
