@@ -1,0 +1,1 @@
+screen -dmS majestic npm run start
