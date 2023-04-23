@@ -90,13 +90,17 @@ module.exports = {
       .addFields({ name: `Anmerkung`, value: optionInput })
       .setFooter({ text: `${interaction.guild.name} tickets` });
     
-    const button = new ActionRowBuilder()
-      .addComponents(
-        new ButtonBuilder()
-          .setCustomId('ticket')
-          .setLabel("Ticket schließen")
-          .setStyle(ButtonStyle.Danger)
-      );
+    const closeButton = new ButtonBuilder()
+      .setCustomId('close')
+      .setLabel("Ticket schließen")
+      .setStyle(ButtonStyle.Danger);
+    const lockButton = new ButtonBuilder()
+      .setCustomId('lock')
+      .setLabel("Ticket sperren")
+      .setStyle(ButtonStyle.Secondary);
+    
+    const buttonRow = new ActionRowBuilder()
+      .addComponents(closeButton, lockButton);
 
     const channel = await interaction.guild.channels.create({
       name: `ticket-${interaction.user.id}`,
@@ -118,20 +122,78 @@ module.exports = {
       ]
     });
 
-    let msg = await channel.send({ embeds: [embed], components: [button] });
+    let msg = await channel.send({ embeds: [embed], components: [buttonRow] });
     await interaction.reply({ content: `Dein Ticket wurde erstellt - ${channel}`, ephemeral: true });
 
     const collector = msg.createMessageComponentCollector();
-    collector.on('collect', async () => {
-      ;channel.delete();
+    collector.on('collect', async b => {
+      switch (b.customId) {
+        case "close":
+          channel.delete();
 
-      const dmEmbed = new EmbedBuilder()
-        .setColor('Red')
-        .setTitle("Dein Ticket wurde geschlossen")
-        .setDescription("Vielen Dank das du dich bei uns gemeldet hast. Eröffne gerne ein neues Ticket, wenn du weitere Anliegen hast.")
-        .setFooter({ text: `${interaction.guild.name} tickets`})
-        .setTimestamp();
-      await interaction.member.send({ embeds: [dmEmbed] });
+          const dmEmbed = new EmbedBuilder()
+            .setColor('Red')
+            .setTitle("Dein Ticket wurde geschlossen")
+            .setDescription("Vielen Dank das du dich bei uns gemeldet hast. Eröffne gerne ein neues Ticket, wenn du weitere Anliegen hast.")
+            .setFooter({ text: `${interaction.guild.name} tickets`})
+            .setTimestamp();
+          await interaction.member.send({ embeds: [dmEmbed] });
+          break;
+        case "lock":
+          if (!b.member.roles.cache.has(leaderRoleID)) {
+            await channel.send(`<@${b.user.id}> Das Ticket kann nur von der Leaderschaft gesperrt werden!`);
+            return;
+          }
+
+          channel.permissionOverwrites.set([
+            {
+              id: b.guild.roles.everyone.id,
+              deny: [PermissionFlagsBits.SendMessages]
+            },
+            {
+              id: b.user.id,
+              deny: [PermissionFlagsBits.SendMessages]
+            },
+            {
+              id: leaderRoleID,
+              deny: [PermissionFlagsBits.SendMessages]
+            }
+          ]);
+
+          lockButton.setCustomId('unlock');
+          lockButton.setLabel("Ticket entsperren");
+          b.update({ embeds: [embed], components: [buttonRow] });
+
+          await channel.send(`<@${interaction.user.id}> Das Ticket wurde gesperrt!`);
+          break;
+        case "unlock":
+          if (!b.member.roles.cache.has(leaderRoleID)) {
+            await channel.send(`<@${b.user.id}> Das Ticket kann nur von der Leaderschaft entsperrt werden!`);
+            return;
+          }
+
+          channel.permissionOverwrites.set([
+            {
+              id: b.guild.roles.everyone.id,
+              allow: [PermissionFlagsBits.SendMessages]
+            },
+            {
+              id: b.user.id,
+              allow: [PermissionFlagsBits.SendMessages]
+            },
+            {
+              id: leaderRoleID,
+              allow: [PermissionFlagsBits.SendMessages]
+            }
+          ]);
+
+          lockButton.setCustomId('lock');
+          lockButton.setLabel("Ticket sperren");
+          b.update({ embeds: [embed], components: [buttonRow] });
+
+          await channel.send(`<@${interaction.user.id}> Das Ticket wurde entsperrt!`);
+          break;
+      }
     });
   }
 };
