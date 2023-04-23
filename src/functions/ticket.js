@@ -99,7 +99,7 @@ module.exports = {
       .setCustomId('lock')
       .setLabel("Ticket sperren")
       .setStyle(ButtonStyle.Secondary)
-      .setDisabled(true);
+      .setDisabled(!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.Administrator));
     
     const buttonRow = new ActionRowBuilder()
       .addComponents(closeButton, lockButton);
