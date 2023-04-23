@@ -82,4 +82,7 @@ const ticket = require('./functions/ticket.js');
 client.on(Events.InteractionCreate, ticket.create);
 client.on(Events.InteractionCreate, ticket.close);
 
+const announce = require('./functions/announce.js');
+client.on(Events.InteractionCreate, announce.create);
+
 client.login(token);
