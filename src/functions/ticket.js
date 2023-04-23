@@ -98,7 +98,8 @@ module.exports = {
     const lockButton = new ButtonBuilder()
       .setCustomId('lock')
       .setLabel("Ticket sperren")
-      .setStyle(ButtonStyle.Secondary);
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(true);
     
     const buttonRow = new ActionRowBuilder()
       .addComponents(closeButton, lockButton);
@@ -163,7 +164,7 @@ module.exports = {
 
           lockButton.setCustomId('unlock');
           lockButton.setLabel("Ticket entsperren");
-          b.update({ embeds: [embed], components: [buttonRow] });
+          await b.update({ embeds: [embed], components: [buttonRow] });
 
           await channel.send(`<@${interaction.user.id}> Das Ticket wurde gesperrt!`);
           break;
@@ -190,7 +191,7 @@ module.exports = {
 
           lockButton.setCustomId('lock');
           lockButton.setLabel("Ticket sperren");
-          b.update({ embeds: [embed], components: [buttonRow] });
+          await b.update({ embeds: [embed], components: [buttonRow] });
 
           await channel.send(`<@${interaction.user.id}> Das Ticket wurde entsperrt!`);
           break;
