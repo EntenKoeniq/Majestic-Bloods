@@ -40,10 +40,10 @@ client.once(Events.ClientReady, async interaction => {
 	console.log(`Ready! Logged in as ${interaction.user.tag}`);
 
 	const activities = [
-		"Gibt einer Person gerade einen Bloodout!",
-		"Scheppert gegen andere Gangs!",
-		"Verteidigt ein Gebiet vor Schmutz!",
-		"Hängt im Unicorn ab!",
+		"Gibt einer Person gerade einen Bloodout >:I",
+		"Scheppert gegen andere Gangs >:)",
+		"Verteidigt ein Gebiet vor Schmutz >:(",
+		"Hängt im Unicorn ab ;)",
 		"Räumt das Lager auf ..."
 	];
 

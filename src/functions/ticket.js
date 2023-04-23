@@ -21,7 +21,7 @@ module.exports = {
       return;
     
     const modal = new ModalBuilder()
-      .setTitle("Wir brauchen einige Informationen")
+      .setTitle("Informationen")
       .setCustomId('ticket-modal');
     
     const username = new TextInputBuilder()
@@ -80,7 +80,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setColor("Red")
       .setAuthor({
-        name: `${interaction.user.username}#${interaction.user.discriminator}`,
+        name: `${interaction.user.username}#${interaction.user.discriminator} <${interaction.user.id}>`,
         iconURL: interaction.user.avatar ? `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.webp` : 'https://cdn.discordapp.com/embed/avatars/0.png'
       })
       .setTitle(`Hallo!`)
