@@ -2,6 +2,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const mongoose = require('mongoose');
 const {
+	REST,
+	Routes,
 	Client,
 	Collection,
 	Events,
@@ -9,6 +11,8 @@ const {
 } = require('discord.js');
 const {
 	mongodb,
+	clientId,
+	guildId,
 	token
 } = require('./config.json');
 
@@ -32,12 +36,24 @@ for (const folder of commandFolders) {
 	}
 }
 
+(async () => {
+	const rest = new REST().setToken(token);
+	
+	const commands = [];
+	client.commands.forEach(el => commands.push(el.data.toJSON()));
+
+	const data = await rest.put(
+		Routes.applicationGuildCommands(clientId, guildId),
+		{ body: commands },
+	);
+
+	console.log(`Es wurden erfolgreich ${data.length} Befehle (/) aktualisiert.`);
+})();
+
 client.once(Events.ClientReady, async interaction => {
 	await mongoose.connect(mongodb).catch(_ => { throw new Error("Es konnte keine Verbidung zur Datenbank hergestellt werden!"); });
 	
-	require('./registerCommands.js');
-
-	console.log(`Ready! Logged in as ${interaction.user.tag}`);
+	console.log(`Erfolgreich als ${interaction.user.tag} angemeldet!`);
 
 	const activities = [
 		"Gibt einer Person gerade einen Bloodout >:I",

@@ -74,8 +74,10 @@ module.exports = {
     const optionInput = interaction.fields.getTextInputValue('option');
 
     const posChannel = interaction.guild.channels.cache.find(c => c.name === `ticket-${interaction.user.id}`);
-    if (posChannel)
-      return await interaction.reply({ content: `Du hast bereits das Ticket - ${posChannel}`, ephemeral: true });
+    if (posChannel) {
+      await interaction.reply({ content: `Du hast bereits das Ticket - ${posChannel}`, ephemeral: true });
+      return;
+    }
     
     const embed = new EmbedBuilder()
       .setColor("Red")
