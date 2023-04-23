@@ -11,7 +11,8 @@ const {
   ButtonBuilder,
   ButtonStyle,
   ChannelType,
-  PermissionFlagsBits
+  PermissionFlagsBits,
+  PermissionsBitField
 } = require('discord.js');
 
 module.exports = {
@@ -140,7 +141,7 @@ module.exports = {
           await interaction.member.send({ embeds: [dmEmbed] });
           break;
         case "lock":
-          if (!b.member.roles.cache.has(leaderRoleID)) {
+          if (!b.member.permissions.has(PermissionsBitField.Flags.Administrator) && !b.member.roles.cache.has(leaderRoleID)) {
             await channel.send(`<@${b.user.id}> Das Ticket kann nur von der Leaderschaft gesperrt werden!`);
             return;
           }
@@ -167,7 +168,7 @@ module.exports = {
           await channel.send(`<@${interaction.user.id}> Das Ticket wurde gesperrt!`);
           break;
         case "unlock":
-          if (!b.member.roles.cache.has(leaderRoleID)) {
+          if (!b.member.permissions.has(PermissionsBitField.Flags.Administrator) && !b.member.roles.cache.has(leaderRoleID)) {
             await channel.send(`<@${b.user.id}> Das Ticket kann nur von der Leaderschaft entsperrt werden!`);
             return;
           }
