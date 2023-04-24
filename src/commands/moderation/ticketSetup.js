@@ -60,7 +60,7 @@ module.exports = {
           )
       );
     
-    let embedMessage = await channel.send({ embeds: [embed], components: [menu] });
+    const embedMessage = await channel.send({ embeds: [embed], components: [menu] });
 
     ticketSchema.create({
       Guild: interaction.guild.id,
