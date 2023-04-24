@@ -1,7 +1,7 @@
 const {
 	leaderRoleID
-} = require('./../config.json');
-const ticketSchema = require('./../schemas/ticket.js');
+} = require("./../config.json");
+const ticketSchema = require("./../schemas/ticket.js");
 const {
   ModalBuilder,
   TextInputBuilder,
@@ -13,19 +13,19 @@ const {
   ChannelType,
   PermissionFlagsBits,
   PermissionsBitField
-} = require('discord.js');
+} = require("discord.js");
 
 module.exports = {
   create: async interaction => {
-    if (!interaction.isStringSelectMenu() || interaction.customId !== 'ticket-select')
+    if (!interaction.isStringSelectMenu() || interaction.customId !== "ticket-select")
       return;
     
     const modal = new ModalBuilder()
       .setTitle("Informationen")
-      .setCustomId('ticket-modal');
+      .setCustomId("ticket-modal");
     
     const username = new TextInputBuilder()
-      .setCustomId('username')
+      .setCustomId("username")
       .setRequired(true)
       .setLabel("Name(IC)")
       .setPlaceholder("Nick Supa")
@@ -33,7 +33,7 @@ module.exports = {
     const usernameActionRow = new ActionRowBuilder().addComponents(username);
     
     const id = new TextInputBuilder()
-      .setCustomId('id')
+      .setCustomId("id")
       .setRequired(true)
       .setLabel("#ID")
       .setPlaceholder("297")
@@ -41,7 +41,7 @@ module.exports = {
     const idActionRow = new ActionRowBuilder().addComponents(id);
 
     const reason = new TextInputBuilder()
-      .setCustomId('reason')
+      .setCustomId("reason")
       .setRequired(true)
       .setLabel("Beschreibe dein Anliegen")
       .setPlaceholder("...")
@@ -49,7 +49,7 @@ module.exports = {
     const reasonActionRow = new ActionRowBuilder().addComponents(reason);
 
     const option = new TextInputBuilder()
-      .setCustomId('option')
+      .setCustomId("option")
       .setRequired(true)
       .setValue(interaction.values[0])
       .setLabel("Kurze Anmerkung worum es geht")
@@ -61,17 +61,17 @@ module.exports = {
     interaction.showModal(modal);
   },
   close: async interaction => {
-    if (!interaction.isModalSubmit() || interaction.customId !== 'ticket-modal')
+    if (!interaction.isModalSubmit() || interaction.customId !== "ticket-modal")
       return;
     
     const ticket = await ticketSchema.findOne({ Guild: interaction.guild.id });
     if (!ticket)
       return;
     
-    const emailInput = interaction.fields.getTextInputValue('username');
-    const idInput = interaction.fields.getTextInputValue('id');
-    const reasonInput = interaction.fields.getTextInputValue('reason');
-    const optionInput = interaction.fields.getTextInputValue('option');
+    const emailInput = interaction.fields.getTextInputValue("username");
+    const idInput = interaction.fields.getTextInputValue("id");
+    const reasonInput = interaction.fields.getTextInputValue("reason");
+    const optionInput = interaction.fields.getTextInputValue("option");
 
     const posChannel = interaction.guild.channels.cache.find(c => c.name === `ticket-${interaction.user.id}`);
     if (posChannel) {
@@ -83,22 +83,22 @@ module.exports = {
       .setColor("Red")
       .setAuthor({
         name: `${interaction.user.username}#${interaction.user.discriminator} <${interaction.user.id}>`,
-        iconURL: interaction.user.avatar ? `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.webp` : 'https://cdn.discordapp.com/embed/avatars/0.png'
+        iconURL: interaction.user.avatar ? `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}.webp` : "https://cdn.discordapp.com/embed/avatars/0.png"
       })
-      .setTitle(`Hallo!`)
+      .setTitle("Hallo!")
       .setDescription("Willkommen bei deinem Ticket! Bitte habe ein wenig Geduld, es wird dir schnellstmöglich jemand weiterhelfen.")
-      .addFields({ name: `Name`, value: emailInput })
-      .addFields({ name: `ID`, value: idInput })
-      .addFields({ name: `Anliegen`, value: reasonInput })
-      .addFields({ name: `Anmerkung`, value: optionInput })
-      .setFooter({ text: `${interaction.guild.name} tickets` });
+      .addFields({ name: "Name", value: emailInput })
+      .addFields({ name: "ID", value: idInput })
+      .addFields({ name: "Anliegen", value: reasonInput })
+      .addFields({ name: "Anmerkung", value: optionInput })
+      .setFooter({ text: interaction.guild.name });
     
     const closeButton = new ButtonBuilder()
-      .setCustomId('close')
+      .setCustomId("close")
       .setLabel("Ticket schließen")
       .setStyle(ButtonStyle.Danger);
     const lockButton = new ButtonBuilder()
-      .setCustomId('lock')
+      .setCustomId("lock")
       .setLabel("Ticket sperren")
       .setStyle(ButtonStyle.Secondary)
       .setDisabled(!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.Administrator));
@@ -130,16 +130,16 @@ module.exports = {
     await interaction.reply({ content: `Dein Ticket wurde erstellt - ${channel}`, ephemeral: true });
 
     const collector = msg.createMessageComponentCollector();
-    collector.on('collect', async b => {
+    collector.on("collect", async b => {
       switch (b.customId) {
         case "close":
           channel.delete();
 
           const dmEmbed = new EmbedBuilder()
-            .setColor('Red')
+            .setColor("Red")
             .setTitle("Dein Ticket wurde geschlossen")
             .setDescription("Vielen Dank das du dich bei uns gemeldet hast. Eröffne gerne ein neues Ticket, wenn du weitere Anliegen hast.")
-            .setFooter({ text: `${interaction.guild.name} tickets`})
+            .setFooter({ text: interaction.guild.name })
             .setTimestamp();
           await interaction.member.send({ embeds: [dmEmbed] });
           break;
@@ -164,7 +164,7 @@ module.exports = {
             }
           ]);
 
-          lockButton.setCustomId('unlock');
+          lockButton.setCustomId("unlock");
           lockButton.setLabel("Ticket entsperren");
           await b.update({ embeds: [embed], components: [buttonRow] });
 
@@ -191,7 +191,7 @@ module.exports = {
             }
           ]);
 
-          lockButton.setCustomId('lock');
+          lockButton.setCustomId("lock");
           lockButton.setLabel("Ticket sperren");
           await b.update({ embeds: [embed], components: [buttonRow] });
 

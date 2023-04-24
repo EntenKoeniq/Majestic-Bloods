@@ -19,16 +19,16 @@ const {
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
 client.commands = new Collection();
-const foldersPath = path.join(__dirname, 'commands');
+const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
-		if ('data' in command && 'execute' in command) {
+		if ("data" in command && "execute" in command) {
 			client.commands.set(command.data.name, command);
 		} else {
 			console.log(`[WARNUNG] Der Befehl in ${filePath} hat keinen Eintrag für 'data' oder 'execute'.`);
@@ -86,19 +86,20 @@ client.on(Events.InteractionCreate, async interaction => {
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
+		const errorMessage = error?.rawError?.message;
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: "Ein Fehler ist aufgetreten!", ephemeral: true });
+			await interaction.followUp({ content: `Ein Fehler ist aufgetreten! (${ errorMessage ?? 'Unknown' })`, ephemeral: true });
 		} else {
-			await interaction.reply({ content: "Ein Fehler ist aufgetreten!", ephemeral: true });
+			await interaction.reply({ content: `Ein Fehler ist aufgetreten! (${ errorMessage ?? 'Unknown' })`, ephemeral: true });
 		}
 	}
 });
 
-const ticket = require('./functions/ticket.js');
+const ticket = require("./functions/ticket.js");
 client.on(Events.InteractionCreate, ticket.create);
 client.on(Events.InteractionCreate, ticket.close);
 
-const announce = require('./functions/announce.js');
+const announce = require("./functions/announce.js");
 client.on(Events.InteractionCreate, announce.create);
 
 client.login(token);
